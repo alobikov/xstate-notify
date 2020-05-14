@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Home from "../home";
+import Home from "../home/Home";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { MachineContext } from "../state";
 import SignUp from "../login/SignUp";
@@ -14,7 +14,16 @@ function App() {
     <Router>
       <div className="App">
         <Switch>
-          <Route path="/login" component={SignUp} />
+          {/* <Route path="/login" component={SignUp} /> */}
+          <Route path="/login">
+            <Home
+              user={{
+                username: "Aleksej Lobikov",
+                email: "aleksej.lobikov@gmail.com",
+                objectId: "aweRt1dr",
+              }}
+            />
+          </Route>
           <Route path="/about" component={Login} />
           <PrivateRoute machine={currentMachine} path="/">
             <Home user={currentMachine.context.user} />
