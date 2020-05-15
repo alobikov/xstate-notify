@@ -3,8 +3,8 @@ import { homeMachine, HomeMachineContext } from "./state";
 import { useMachine } from "@xstate/react";
 import HomeBar from "./HomeBar";
 import "./Home.css";
-import Sender from "./sender/Sender";
-import Contacts from "./contacts/Contacts";
+import SenderSemui from "./sender/SenderSemui";
+import ContactsSemui from "./contacts/ContactsSemui";
 import MessengerTabs from "./messenger/MessengerTabs";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -44,10 +44,10 @@ export default function Home({ user }) {
           <HomeBar />
           <div className="wrapper">
             <div className="contacts">
-              <Contacts />
+              <ContactsSemui />
             </div>
             <div className="sender">
-              <Sender />
+              <SenderSemui />
             </div>
             <div className="messenger">
               <MessengerTabs />
