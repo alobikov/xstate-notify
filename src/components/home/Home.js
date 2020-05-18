@@ -4,6 +4,9 @@ import { useMachine } from "@xstate/react";
 import HomeBar from "./HomeBar";
 import "./Home.css";
 import SenderSemui from "./sender/SenderSemui";
+import "simplebar/dist/simplebar.min.css";
+import SimpleBar from "simplebar-react";
+
 import ContactsSemui from "./contacts/ContactsSemui";
 import MessengerTabs from "./messenger/MessengerTabs";
 
@@ -23,12 +26,13 @@ const styles = {
 
 export default function Home({ user }) {
   console.log("*** Home rendered ***");
-  console.log(user.username);
+  // console.log(user.username);
   const machineWithContext = homeMachine.withContext({ user });
   const [current, send] = useMachine(machineWithContext);
 
   console.log(current.value); // state
   console.log(current.context); // context of homeMachine
+  console.log(current.event);
   const handleReadMessages = () => {
     console.log("handelReadMessages()");
     send("READ_MESSAGES");

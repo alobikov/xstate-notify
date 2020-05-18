@@ -8,60 +8,169 @@ const readMessages = async (ctx, event) => {
   console.log(ctx.user.username);
   return await readMessagesParse(ctx.user.username);
 };
-export const homeMachine = Machine({
-  id: "home",
-  initial: "idle",
-  context: {
-    user: {},
-    messages: [{ body: "initial" }],
+
+export const homeMachine = Machine(
+  {
+    // machine is instantiated .withContext({user}), so all other context demolished
+    // use entry:  to set initial values
+    id: "home",
+    initial: "idle",
+    context: {
+      user: {},
+      msgForm: "",
+      messages: [],
+      addressees: [],
+      clearBtnDis: true,
+    },
+    states: {
+      idle: {
+        entry: assign({
+          messages: [
+            {
+              from: "Pavel Troller",
+              body: "initially assigned message",
+              objectId: "1",
+            },
+          ],
+          addressees: [],
+          sendBtnDis: true,
+        }),
+        initial: "addrFieldEmpty",
+        states: {
+          addrFieldEmpty: {
+            entry: assign({ clearBtnDis: true }),
+            on: {
+              ADD_ADDRESSEE: {
+                target: "addrFillStarted",
+                actions: assign({
+                  addressees: (ctx, { payload }) => [
+                    ...ctx.addressees,
+                    payload,
+                  ],
+                }),
+              },
+            },
+          },
+          addrFillStarted: {
+            entry: assign({ clearBtnDis: false }),
+            on: {
+              DEL_ADDRESSEE: [
+                {
+                  target: "addrFieldEmpty",
+                  cond: "addrEmpty",
+                  actions: ["delAddressee"],
+                },
+                {
+                  actions: ["delAddressee"],
+                },
+              ],
+              ADD_ADDRESSEE: [
+                {
+                  target: "addrFillStarted",
+                  cond: "duplicatedAddr",
+                },
+                {
+                  target: "addrFillCompleted",
+                  cond: "addrLimit",
+                },
+                {
+                  target: "addrFillStarted",
+                  actions: ["addAddressee"],
+                },
+              ],
+            },
+          },
+          addrFillCompleted: {
+            on: {
+              DEL_ADDRESSEE: {
+                target: "addrFillStarted",
+                actions: ["delAddressee"],
+              },
+            },
+          },
+        },
+
+        on: {
+          CLEAR_MESSAGE: { target: ".addrFieldEmpty", actions: "clearMessage" },
+          MESSAGE_DATA: { actions: "receiveTyping" },
+          READ_MESSAGES: {
+            target: "msg_reading_started",
+          },
+          SEND_MESSAGE: {
+            actions: ["sendMessage", "clearMessage"],
+          },
+        },
+      },
+      msg_reading_started: {
+        invoke: {
+          id: "readMessages",
+          src: readMessages,
+          onDone: {
+            target: "success",
+            actions: assign({
+              messages: (ctx, event) => {
+                console.log(event.data);
+                return event.data;
+              },
+            }),
+          },
+          onError: {
+            target: "fail",
+            actions: assign({
+              error: (_, event) => {
+                console.log(event.data);
+                return event.data;
+              },
+            }),
+          },
+        },
+      },
+      success: {
+        on: {
+          ADD_MESSAGE: {
+            target: "idle",
+            actions: assign({
+              messages: (ctx, event) => [
+                { body: "A message", objectId: "12345" },
+                ...ctx.messages,
+              ],
+            }),
+          },
+        },
+      },
+      fail: {},
+    },
   },
-  states: {
-    idle: {
-      entry: assign({
-        messages: [{ body: "initially assigned message", objectId: "1" }],
+  {
+    guards: {
+      addrLimit: (ctx, event) => ctx.addressees.length > 2,
+      addrEmpty: (ctx, event) => ctx.addressees.length === 1,
+      duplicatedAddr: (ctx, event) => ctx.addressees.includes(event.payload),
+    },
+    actions: {
+      delAddressee: assign({
+        addressees: (ctx, event) => {
+          console.log("delAddressee");
+          console.dir(event);
+          return ctx.addressees.filter(
+            (addressee) => addressee !== event.payload
+          );
+        },
       }),
-      on: {
-        READ_MESSAGES: {
-          target: "msg_reading_started",
-        },
-      },
+      addAddressee: assign({
+        addressees: (ctx, { payload }) => [...ctx.addressees, payload],
+      }),
+      sendMessage: assign({
+        messages: (ctx, event) => [
+          ...ctx.messages,
+          { body: ctx.msgForm, objectId: ctx.msgForm.slice(0, 5) },
+        ],
+      }),
+      clearMessage: assign({ addressees: [], msgForm: "" }),
+      receiveTyping: assign({
+        msgForm: (ctx, event) => event.payload,
+        clearBtnDis: false,
+      }),
     },
-    msg_reading_started: {
-      invoke: {
-        id: "readMessages",
-        src: readMessages,
-        onDone: {
-          target: "success",
-          actions: assign({
-            messages: (ctx, event) => {
-              console.log(event.data);
-              return event.data;
-            },
-          }),
-        },
-        onError: {
-          target: "fail",
-          actions: assign({
-            error: (_, event) => {
-              console.log(event.data);
-              return event.data;
-            },
-          }),
-        },
-      },
-    },
-    success: {
-      on: {
-        ADD_MESSAGE: {
-          actions: assign({
-            messages: (ctx, event) => [
-              { body: "A message", objectId: "12345" },
-              ...ctx.messages,
-            ],
-          }),
-        },
-      },
-    },
-    fail: {},
-  },
-});
+  }
+);
