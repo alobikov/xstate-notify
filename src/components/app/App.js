@@ -14,16 +14,16 @@ function App() {
     <Router>
       <div className="App">
         <Switch>
-          {/* <Route path="/login" component={SignUp} /> */}
-          <Route path="/login">
+          <Route path="/login" component={SignUp} />
+          {/* <Route path="/">
             <Home
-              user={{
-                username: "Aleksej Lobikov",
-                email: "aleksej.lobikov@gmail.com",
-                objectId: "aweRt1dr",
-              }}
+            user={{
+              username: "Aleksej Lobikov",
+              email: "aleksej.lobikov@gmail.com",
+              objectId: "aweRt1dr",
+            }}
             />
-          </Route>
+          </Route> */}
           <Route path="/about" component={Login} />
           <PrivateRoute machine={currentMachine} path="/">
             <Home user={currentMachine.context.user} />

@@ -37,122 +37,9 @@ export default function Inbox() {
           // background: "red",
         }}
       >
-        <List divided relaxed style={{ marginRight: 6 }}>
+        <List divided relaxed style={{ margin: 6 }}>
           {current.context.messages.map((message) => (
-            <div key="dfgsd">
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-              <ListItem
-                message={message}
-                key={(Math.random() * 10000).toString()}
-              />
-            </div>
+            <ListItem message={message} key={message.objectId} />
           ))}
         </List>
       </div>
@@ -199,14 +86,12 @@ function ListItem({ message }) {
     <Segment attached style={styles.flexContainer}>
       <div style={styles.flexConCol}>
         <div style={styles.from}>
-          <strong>Pavel Troller Extremaler</strong>
+          <strong>{message.from}</strong>
         </div>
-        <div style={styles.time}>10 mins ago</div>
+        <div style={styles.time}>{message.timestamp}</div>
       </div>
       <div style={styles.divider}></div>
-      <div style={styles.body}>
-        I did receive your message yersteday and was very excited
-      </div>
+      <div style={styles.body}>{message.body}</div>
       <div style={styles.divider}></div>
       <div style={styles.buttons}>
         <Checkbox className="checkbox"></Checkbox>

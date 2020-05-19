@@ -48,7 +48,7 @@ export default function Home({ user }) {
           <HomeBar />
           <div className="wrapper">
             <div className="contacts">
-              <ContactsSemui />
+              <ContactsSemui contacts={current.context.allContacts} />
             </div>
             <div className="sender">
               <SenderSemui />

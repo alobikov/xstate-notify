@@ -2,6 +2,7 @@ import React from "react";
 import { Segment, Form, TextArea, Button, Icon } from "semantic-ui-react";
 import { Divider } from "semantic-ui-react";
 import { HomeMachineContext } from "../state";
+import { getAddressees } from "../../../services/parse";
 
 export default function SenderSemui() {
   const styles = {
@@ -17,7 +18,9 @@ export default function SenderSemui() {
   const handleSend = () => send("SEND_MESSAGE");
   const handleDelete = (addressee) =>
     send({ type: "DEL_ADDRESSEE", payload: addressee });
-  const handleClear = () => send("CLEAR_MESSAGE");
+  const handleClear = async () => {
+    send("CLEAR_MESSAGE");
+  };
   const handleChange = (event) => {
     console.log(event.target.value);
     send({ type: "MESSAGE_DATA", payload: event.target.value });
@@ -50,12 +53,12 @@ export default function SenderSemui() {
           rows={3}
           placeholder="Compose your message"
           onChange={handleChange}
-          value={current.context.msgForm}
+          value={current.context.msgInForm}
         />
       </Form>
       <Segment basic style={{ padding: "0px" }}>
         <Button
-          disabled={!current.context.msgForm || current.context.clearBtnDis}
+          disabled={!current.context.msgInForm || current.context.clearBtnDis}
           onClick={handleSend}
           size="tiny"
           color="twitter"
@@ -73,9 +76,9 @@ export default function SenderSemui() {
           Clear
         </Button>
       </Segment>
-      {/* <pre style={{ textAlign: "start" }}>
+      <pre style={{ textAlign: "start" }}>
         {JSON.stringify(current.context, null, 2)}
-      </pre> */}
+      </pre>
     </Segment>
   );
 }

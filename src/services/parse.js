@@ -1,5 +1,5 @@
 import keys from "../constants/apikeys";
-const Parse = require("parse/node");
+const Parse = require("parse");
 
 export function parseInit() {
   console.log("parseInit() APP_ID: " + keys.APP_ID);
@@ -92,10 +92,20 @@ export async function readMessages(username) {
 export async function queryCollection({ collection, column, searchItem }) {
   const Collection = Parse.Object.extend(collection);
   const query = new Parse.Query(Collection);
-  query.equalTo(column, searchItem);
+  !searchItem ? query.find() : query.equalTo(column, searchItem);
   const results = await query.find();
   if (results.length === 0) return null;
   return results;
+}
+
+/// queries Users collection for all usernames
+/// returns array of object {username: 'Jhon Doe' objectId: 'aasdsdd', ...}
+export async function getAddressees() {
+  const result = await queryCollection({ collection: "Users" });
+  return result.map((data) => ({
+    username: data.get("username"),
+    objectId: data.id,
+  }));
 }
 
 /// creates user record in Users collection

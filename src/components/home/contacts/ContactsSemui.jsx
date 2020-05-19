@@ -4,80 +4,7 @@ import { HomeMachineContext } from "../state";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 
-export default function ContactsSemui() {
-  const contacts = [
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-    "Aleksej Lobikov",
-    "Pavel Troller",
-    "Vadim Khudyakov",
-    "Artiom Kondintcev",
-    "Vladislav Ivanovich Petrov",
-  ];
-
+export default function ContactsSemui({ contacts }) {
   return (
     <Segment style={{ paddingRight: 5 }}>
       <SimpleBar style={{ maxHeight: "88vh" }}>
@@ -92,10 +19,7 @@ export default function ContactsSemui() {
         >
           <List divided relaxed>
             {contacts.map((contact) => (
-              <ListItem
-                addressee={contact}
-                key={(Math.random() * 10000).toString()}
-              />
+              <ListItem addressee={contact.username} key={contact.objectId} />
             ))}
           </List>
         </div>
@@ -118,10 +42,7 @@ const ListItem = ({ addressee }) => {
     send({ type: "ADD_ADDRESSEE", payload: addressee });
   };
   return (
-    <List.Item
-      onClick={handleClick.bind(null, addressee)}
-      key={Math.floor(Math.random() * 1000).toString()}
-    >
+    <List.Item onClick={handleClick.bind(null, addressee)}>
       <List.Icon
         style={styles.icon}
         name="user"
