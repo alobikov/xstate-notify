@@ -17,7 +17,7 @@ export default function ContactsSemui({ contacts }) {
             // background: "lightblue",
           }}
         >
-          <List divided relaxed>
+          <List animated divided relaxed>
             {contacts.map((contact) => (
               <ListItem addressee={contact.username} key={contact.objectId} />
             ))}

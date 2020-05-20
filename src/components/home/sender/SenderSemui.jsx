@@ -15,16 +15,20 @@ export default function SenderSemui() {
   };
   const [current, send] = React.useContext(HomeMachineContext);
 
-  const handleSend = () => send("SEND_MESSAGE");
+  const handleSend = (message) => {
+    console.log(message);
+    send({
+      type: "SEND_MESSAGE",
+      payload: message,
+    }); // {body: 'this is message', to: 'Pavel'}
+  };
   const handleDelete = (addressee) =>
     send({ type: "DEL_ADDRESSEE", payload: addressee });
-  const handleClear = async () => {
-    send("CLEAR_MESSAGE");
-  };
-  const handleChange = (event) => {
-    console.log(event.target.value);
+
+  const handleClear = async () => send("CLEAR_MESSAGE");
+
+  const handleChange = (event) =>
     send({ type: "MESSAGE_DATA", payload: event.target.value });
-  };
 
   console.log(current.value);
   console.log(current.context);
@@ -59,7 +63,10 @@ export default function SenderSemui() {
       <Segment basic style={{ padding: "0px" }}>
         <Button
           disabled={!current.context.msgInForm || current.context.clearBtnDis}
-          onClick={handleSend}
+          onClick={handleSend.bind(null, {
+            body: current.context.msgInForm,
+            to: current.context.addressees,
+          })}
           size="tiny"
           color="twitter"
         >
@@ -76,9 +83,9 @@ export default function SenderSemui() {
           Clear
         </Button>
       </Segment>
-      <pre style={{ textAlign: "start" }}>
+      {/* <pre style={{ textAlign: "start" }}>
         {JSON.stringify(current.context, null, 2)}
-      </pre>
+      </pre> */}
     </Segment>
   );
 }

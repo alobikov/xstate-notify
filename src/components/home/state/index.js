@@ -1,8 +1,11 @@
 import React from "react";
-import { Machine, assign } from "xstate";
+import { Machine, assign, send } from "xstate";
 import {
   readMessages as readMessagesParse,
   getAddressees as getAddresseesParse,
+  deleteMessage as deleteMessageParse,
+  createMessage as createMessageParse,
+  readOutbox as readOutboxParse,
 } from "../../../services/parse";
 
 export const HomeMachineContext = React.createContext();
@@ -12,9 +15,32 @@ const readMessages = async (ctx, event) => {
   return await readMessagesParse(ctx.user.username);
 };
 const getAddressees = async (ctx, event) => {
+  await new Promise((resolve) => setTimeout(resolve, 1));
   return await getAddresseesParse();
 };
-
+const getMessages = async (ctx, event) => {
+  return await readMessagesParse(ctx.user.username);
+};
+const getOutbox = async (ctx, event) => {
+  return await readOutboxParse(ctx.user.username);
+};
+const deleteInboxItem = async (ctx, event) => {
+  ctx.messages = ctx.messages.filter(
+    ({ objectId }) => objectId !== event.payload
+  );
+  return await deleteMessageParse(event.payload);
+};
+const dispatchMessage = async (ctx, event) => {
+  const to = event.payload.to[0]; //TODO; now it is sending this message to first addressee
+  const message = await createMessageParse(
+    ctx.user.username,
+    to,
+    event.payload.body
+  );
+  if (to === ctx.user.username) {
+    ctx.messages = [message, ...ctx.messages];
+  }
+};
 export const homeMachine = Machine(
   {
     // machine is instantiated .withContext({user}), so all other context demolished
@@ -25,6 +51,7 @@ export const homeMachine = Machine(
       user: {},
       msgInForm: "",
       messages: [],
+      outbox: [],
       allContacts: [],
       addressees: [],
       clearBtnDis: true,
@@ -41,42 +68,61 @@ export const homeMachine = Machine(
                 timestamp: "10 mins ago",
               },
             ],
+            outbox: [],
             allContacts: [],
             addressees: [],
-            sendBtnDis: true,
+            clearBtnDis: true,
           }),
         ],
         invoke: {
           id: "getAddressees",
           src: getAddressees,
           onDone: {
-            target: "addrFieldEmpty",
+            target: "msgLoading",
             actions: assign({ allContacts: (context, event) => event.data }),
           },
           onError: {
-            target: "addrFieldEmpty",
+            target: "msgLoading",
             actions: assign({
-              error: (context, event) => "there is problem fetching",
+              error: (context, event) => "there is problem fetching contacts",
             }),
           },
         },
       },
-      // initial: "addrFieldEmpty",
-
+      msgLoading: {
+        invoke: {
+          id: "getMessages",
+          src: getMessages,
+          onDone: {
+            target: "outboxLoading",
+            actions: assign({ messages: (context, event) => event.data }),
+          },
+          onError: {
+            target: "outboxLoading",
+            actions: assign({
+              error: (context, event) => "there is problem fetching messages",
+            }),
+          },
+        },
+      },
       addrFieldEmpty: {
         entry: assign({ clearBtnDis: true }),
         on: {
           ADD_ADDRESSEE: {
             target: "addrFillStarted",
-            actions: assign({
-              addressees: (ctx, { payload }) => [...ctx.addressees, payload],
-            }),
+            actions: "addAddressee",
           },
         },
       },
       addrFillStarted: {
         entry: assign({ clearBtnDis: false }),
         on: {
+          "": [
+            {
+              target: "addrFillCompleted",
+              cond: "addrLimit",
+            },
+          ],
           DEL_ADDRESSEE: [
             {
               target: "addrFieldEmpty",
@@ -88,18 +134,8 @@ export const homeMachine = Machine(
             },
           ],
           ADD_ADDRESSEE: [
-            {
-              target: "addrFillStarted",
-              cond: "duplicatedAddr",
-            },
-            {
-              target: "addrFillCompleted",
-              cond: "addrLimit",
-            },
-            {
-              target: "addrFillStarted",
-              actions: ["addAddressee"],
-            },
+            { target: "addrFillStarted", cond: "duplicatedAddr" },
+            { actions: "addAddressee" },
           ],
         },
       },
@@ -111,22 +147,7 @@ export const homeMachine = Machine(
           },
         },
       },
-
-      on: {
-        CLEAR_MESSAGE: {
-          target: ".addrFieldEmpty",
-          actions: ["clearMessage"],
-        }, //TODO
-        MESSAGE_DATA: { actions: "receiveTyping" },
-        READ_MESSAGES: {
-          target: "msg_reading_started",
-        },
-        SEND_MESSAGE: {
-          actions: ["sendMessage", "clearMessage"],
-        },
-      },
-
-      msg_reading_started: {
+      msgReadingStarted: {
         invoke: {
           id: "readMessages",
           src: readMessages,
@@ -150,25 +171,80 @@ export const homeMachine = Machine(
           },
         },
       },
-      success: {
-        on: {
-          ADD_MESSAGE: {
-            target: "idle",
+      outboxLoading: {
+        invoke: {
+          id: "getOutbox",
+          src: getOutbox,
+          onDone: {
+            target: "addrFieldEmpty",
             actions: assign({
-              messages: (ctx, event) => [
-                { body: "A message", objectId: "12345" },
-                ...ctx.messages,
-              ],
+              outbox: (ctx, event) => {
+                console.log(event.data);
+                return event.data;
+              },
+            }),
+          },
+          onError: {
+            target: "addrFieldEmpty",
+            actions: assign({
+              error: (context, event) => "there is problem fetching messages",
             }),
           },
         },
       },
+      deletingInboxItem: {
+        invoke: {
+          id: "deleteInboxItem",
+          src: deleteInboxItem,
+          onDone: {
+            target: "addrFieldEmpty",
+            actions: {}, // assign({ messages: (context, event) => event.data }),
+          },
+          onError: {
+            target: "addrFieldEmpty",
+            actions: assign({
+              error: (context, event) => "there is problem fetching contacts",
+            }),
+          },
+        },
+      },
+      sendingMessage: {
+        invoke: {
+          id: "dispatchMessage",
+          src: dispatchMessage,
+          onDone: {
+            target: "addrFieldEmpty",
+            actions: "clearMessage", // assign({ messages: (context, event) => event.data }),
+          },
+          onError: {
+            target: "addrFieldEmpty",
+            actions: assign({
+              error: (context, event) => "there is problem sending message",
+            }),
+          },
+        },
+      },
+      success: {},
       fail: {},
+    },
+    on: {
+      CLEAR_MESSAGE: {
+        target: ".addrFieldEmpty",
+        actions: ["clearMessage"],
+      }, //TODO
+      MESSAGE_DATA: { actions: "receiveTyping" },
+      READ_MESSAGES: ".msgReadingStarted",
+      SEND_MESSAGE: {
+        target: ".sendingMessage",
+        actions: ["clearMessage"],
+      },
+      ADDR_COMPLETE: ".addrFillCompleted",
+      DEL_FROM_INBOX: ".deletingInboxItem",
     },
   },
   {
     guards: {
-      addrLimit: (ctx, event) => ctx.addressees.length > 2,
+      addrLimit: (ctx, event) => ctx.addressees.length === 3,
       addrEmpty: (ctx, event) => ctx.addressees.length === 1,
       duplicatedAddr: (ctx, event) => ctx.addressees.includes(event.payload),
     },

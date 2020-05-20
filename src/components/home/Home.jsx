@@ -28,7 +28,7 @@ export default function Home({ user }) {
   console.log("*** Home rendered ***");
   // console.log(user.username);
   const machineWithContext = homeMachine.withContext({ user });
-  const [current, send] = useMachine(machineWithContext);
+  const [current, send] = useMachine(machineWithContext, { devTools: true });
 
   console.log(current.value); // state
   console.log(current.context); // context of homeMachine

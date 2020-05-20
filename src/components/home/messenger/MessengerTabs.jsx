@@ -1,6 +1,7 @@
 import React from "react";
 import { Tab, Segment } from "semantic-ui-react";
 import Inbox from "./Inbox";
+import Outbox from "./Outbox";
 
 const panes = [
   {
@@ -14,7 +15,9 @@ const panes = [
   {
     menuItem: "Outbox",
     render: () => (
-      <Tab.Pane attached={false}>Outbox Content - To be done</Tab.Pane>
+      <Tab.Pane as="div" style={{ padding: "0px" }}>
+        <Outbox />
+      </Tab.Pane>
     ),
   },
   {

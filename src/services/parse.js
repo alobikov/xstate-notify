@@ -70,7 +70,7 @@ export async function userSignUpAsync({ username, email, password }) {
   await createSelfUser(username, result.objectId);
   return result;
 }
-/// reads all messages from Messsages for given user
+/// reads all inbox messages from Messsages for given user
 export async function readMessages(username) {
   const Messages = Parse.Object.extend("Messages");
   const query = new Parse.Query(Messages);
@@ -86,7 +86,53 @@ export async function readMessages(username) {
     body: msg.get("body"),
   }));
 }
-
+/// reads all outbox messages from Messsages for given user
+export async function readOutbox(username) {
+  const Messages = Parse.Object.extend("Messages");
+  const query = new Parse.Query(Messages);
+  query.equalTo("from", username);
+  const results = await query.find();
+  console.log(results.length + " messages");
+  console.log(results[0]);
+  // convert returned Parse.Object values to array of Messages
+  return results.map((msg) => ({
+    objectId: msg.id,
+    to: msg.get("to"),
+    timestamp: msg.get("timestamp"),
+    body: msg.get("body"),
+  }));
+}
+/// creates new message in Messages on server
+/// timestamp added in this function
+/// return objectId of created meddage
+export async function createMessage(from, to, body) {
+  const Messages = Parse.Object.extend("Messages");
+  const message = new Messages();
+  const d = new Date();
+  const datestring =
+    d.getFullYear() +
+    "-" +
+    ("0" + (d.getMonth() + 1)).slice(-2) +
+    "-" +
+    ("0" + d.getDate()).slice(-2) +
+    " " +
+    ("0" + d.getHours()).slice(-2) +
+    ":" +
+    ("0" + d.getMinutes()).slice(-2);
+  message.set("from", from);
+  message.set("body", body);
+  message.set("to", to);
+  message.set("timestamp", datestring);
+  const result = await message.save();
+  console.log("yyyyyyyyyyyyyyyyyyyy");
+  console.dir(result);
+  return {
+    objectId: result.id,
+    body: result.get("body"),
+    from: result.get("from"),
+    timestamp: result.get("timestamp"),
+  };
+}
 /// queries collection for searchItem in column
 /// returns null if nothing found or array
 export async function queryCollection({ collection, column, searchItem }) {
@@ -97,9 +143,9 @@ export async function queryCollection({ collection, column, searchItem }) {
   if (results.length === 0) return null;
   return results;
 }
-
 /// queries Users collection for all usernames
 /// returns array of object {username: 'Jhon Doe' objectId: 'aasdsdd', ...}
+///
 export async function getAddressees() {
   const result = await queryCollection({ collection: "Users" });
   return result.map((data) => ({
@@ -107,7 +153,13 @@ export async function getAddressees() {
     objectId: data.id,
   }));
 }
-
+export async function deleteMessage(objectId) {
+  const Messages = Parse.Object.extend("Messages");
+  const query = new Parse.Query(Messages);
+  const object = await query.get(objectId);
+  const response = await object.destroy();
+  return response;
+}
 /// creates user record in Users collection
 async function createSelfUser(username, objectId) {
   // first, check if user is already in Users collection

@@ -4,7 +4,7 @@ import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import { Segment, List, Icon, Checkbox } from "semantic-ui-react";
 
-export default function Inbox() {
+export default function Outbox() {
   console.log("*** Messenger rendered ***");
   const [current, send] = React.useContext(HomeMachineContext);
 
@@ -23,7 +23,7 @@ export default function Inbox() {
         }}
       >
         <List animated relaxed style={{ margin: 6 }}>
-          {current.context.messages.map((message) => (
+          {current.context.outbox.map((message) => (
             <ListItem message={message} key={message.objectId} send={send} />
           ))}
         </List>
@@ -80,7 +80,7 @@ function ListItem({ message, send }) {
     <Segment attached style={styles.flexContainer}>
       <div style={styles.flexConCol}>
         <div style={styles.from}>
-          <strong>{message.from}</strong>
+          <strong>{message.to}</strong>
         </div>
         <div style={styles.time}>{message.timestamp}</div>
       </div>
