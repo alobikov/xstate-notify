@@ -84,6 +84,7 @@ export async function readMessages(username) {
     from: msg.get("from"),
     timestamp: msg.get("timestamp"),
     body: msg.get("body"),
+    title: msg.get("title"),
   }));
 }
 /// reads all outbox messages from Messsages for given user
@@ -95,12 +96,31 @@ export async function readOutbox(username) {
   console.log(results.length + " messages");
   console.log(results[0]);
   // convert returned Parse.Object values to array of Messages
-  return results.map((msg) => ({
-    objectId: msg.id,
-    to: msg.get("to"),
-    timestamp: msg.get("timestamp"),
-    body: msg.get("body"),
-  }));
+  return results
+    .map((msg) => ({
+      objectId: msg.id,
+      to: msg.get("to"),
+      timestamp: msg.get("timestamp"),
+      body: msg.get("body"),
+      title: msg.get("title"),
+    }))
+    .filter((msg) => msg.title !== "DEL");
+}
+/// updates message title im Meessages collection
+export async function setMessageTitle(objectId, title) {
+  const Messages = Parse.Object.extend("Messages");
+  const message = new Parse.Query(Messages);
+  message.get(objectId).then((object) => {
+    object.set("title", title);
+    object.save().then(
+      (response) => {
+        return null;
+      },
+      (error) => {
+        return "Error while updating " + error;
+      }
+    );
+  });
 }
 /// creates new message in Messages on server
 /// timestamp added in this function

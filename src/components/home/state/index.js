@@ -6,6 +6,7 @@ import {
   deleteMessage as deleteMessageParse,
   createMessage as createMessageParse,
   readOutbox as readOutboxParse,
+  setMessageTitle as setMessageTitleParse,
 } from "../../../services/parse";
 
 export const HomeMachineContext = React.createContext();
@@ -25,11 +26,17 @@ const getOutbox = async (ctx, event) => {
   return await readOutboxParse(ctx.user.username);
 };
 const deleteInboxItem = async (ctx, event) => {
-  ctx.messages = ctx.messages.filter(
-    ({ objectId }) => objectId !== event.payload
-  );
-  return await deleteMessageParse(event.payload);
+  await deleteMessageParse(event.payload);
+  return ctx.messages.filter(({ objectId }) => objectId !== event.payload);
 };
+
+const deleteOutboxMessage = async (ctx, event) => {
+  // first set title of the message on server to 'DEL'
+  await setMessageTitleParse(event.payload, "DEL");
+  // second remove message from context.outbox array
+  return ctx.outbox.filter(({ objectId }) => objectId !== event.payload);
+};
+
 const dispatchMessage = async (ctx, event) => {
   const to = event.payload.to[0]; //TODO; now it is sending this message to first addressee
   const message = await createMessageParse(
@@ -198,12 +205,29 @@ export const homeMachine = Machine(
           src: deleteInboxItem,
           onDone: {
             target: "addrFieldEmpty",
-            actions: {}, // assign({ messages: (context, event) => event.data }),
+            actions: assign({ messages: (context, event) => event.data }),
           },
           onError: {
             target: "addrFieldEmpty",
             actions: assign({
               error: (context, event) => "there is problem fetching contacts",
+            }),
+          },
+        },
+      },
+      deletingOutboxMessage: {
+        invoke: {
+          src: deleteOutboxMessage,
+          id: "deleteOutboxMessage",
+          onDone: {
+            target: "addrFieldEmpty",
+            actions: assign({ outbox: (context, event) => event.data }),
+          },
+          onError: {
+            target: "addrFieldEmpty",
+            actions: assign({
+              error: (context, event) =>
+                "there is problem 'deleting' outbox item",
             }),
           },
         },
@@ -239,7 +263,8 @@ export const homeMachine = Machine(
         actions: ["clearMessage"],
       },
       ADDR_COMPLETE: ".addrFillCompleted",
-      DEL_FROM_INBOX: ".deletingInboxItem",
+      DEL_INBOX_ITEM: ".deletingInboxItem",
+      DEL_OUTBOX_MESSAGE: ".deletingOutboxMessage", //TODO
     },
   },
   {

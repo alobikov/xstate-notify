@@ -68,7 +68,7 @@ function ListItem({ message, send }) {
     },
   };
   const handleDelete = async (objectId) => {
-    send({ type: "DEL_FROM_INBOX", payload: objectId });
+    send({ type: "DEL_INBOX_ITEM", payload: objectId });
   };
   function listItemOn(e) {
     e.target.style.color = "red";

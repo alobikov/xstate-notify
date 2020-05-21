@@ -44,7 +44,7 @@ function ListItem({ message, send }) {
       flexFlow: "column",
       textAlign: "start",
     },
-    from: {
+    addressee: {
       flex: 1,
       fontSize: "0.9rem",
     },
@@ -68,7 +68,9 @@ function ListItem({ message, send }) {
     },
   };
   const handleDelete = async (objectId) => {
-    send({ type: "DEL_FROM_INBOX", payload: objectId });
+    send({ type: "DEL_OUTBOX_MESSAGE", payload: objectId });
+    // this event means message 'title' on server should be set to 'DEL'
+    // and meessage should be removed from context.outbox array
   };
   function listItemOn(e) {
     e.target.style.color = "red";
@@ -79,8 +81,8 @@ function ListItem({ message, send }) {
   return (
     <Segment attached style={styles.flexContainer}>
       <div style={styles.flexConCol}>
-        <div style={styles.from}>
-          <strong>{message.to}</strong>
+        <div style={styles.addressee}>
+          <strong>To: {message.to}</strong>
         </div>
         <div style={styles.time}>{message.timestamp}</div>
       </div>
