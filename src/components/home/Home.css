@@ -40,3 +40,6 @@
   text-align: start;
   margin-block-start: 0em;
 }
+.listitem:hover {
+  background-color: azure;
+}

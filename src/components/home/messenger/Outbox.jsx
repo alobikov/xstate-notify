@@ -33,6 +33,12 @@ export default function Outbox() {
 }
 
 function ListItem({ message, send }) {
+  const toCamelCase = (str) =>
+    str
+      .split(/\s*[\s,]\s*/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
   const styles = {
     flexContainer: {
       display: "flex",
@@ -82,7 +88,7 @@ function ListItem({ message, send }) {
     <Segment attached style={styles.flexContainer}>
       <div style={styles.flexConCol}>
         <div style={styles.addressee}>
-          <strong>To: {message.to}</strong>
+          <strong>to: {toCamelCase(message.to)}</strong>
         </div>
         <div style={styles.time}>{message.timestamp}</div>
       </div>

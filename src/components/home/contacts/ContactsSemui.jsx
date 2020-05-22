@@ -28,6 +28,11 @@ export default function ContactsSemui({ contacts }) {
   );
 }
 const ListItem = ({ addressee }) => {
+  const toCamelCase = (str) =>
+    str
+      .split(/\s*[\s,]\s*/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   const styles = {
     icon: {
       paddingTop: "0.2rem",
@@ -50,7 +55,7 @@ const ListItem = ({ addressee }) => {
         color="grey"
       ></List.Icon>
       <List.Content as="a" style={styles.item}>
-        {addressee}
+        {toCamelCase(addressee)}
       </List.Content>
     </List.Item>
   );

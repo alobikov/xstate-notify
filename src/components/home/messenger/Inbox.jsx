@@ -12,27 +12,36 @@ export default function Inbox() {
   console.log(current.context); // context of homeMachine
 
   return (
-    <SimpleBar style={{ maxHeight: "58.6vh" }}>
-      <div
-        style={{
-          paddingRight: "0px",
-          margin: "0px",
-          width: "100%",
-          display: "block",
-          // background: "red",
-        }}
-      >
-        <List animated relaxed style={{ margin: 6 }}>
-          {current.context.messages.map((message) => (
-            <ListItem message={message} key={message.objectId} send={send} />
-          ))}
-        </List>
-      </div>
-    </SimpleBar>
+    <div>
+      <SimpleBar style={{ maxHeight: "58.6vh" }}>
+        <div
+          style={{
+            paddingRight: "0px",
+            margin: "0px",
+            width: "100%",
+            display: "block",
+            // background: "red",
+          }}
+        >
+          <List animated relaxed style={{ margin: 6 }}>
+            {current.context.messages.map((message) => (
+              <ListItem message={message} key={message.objectId} send={send} />
+            ))}
+          </List>
+        </div>
+      </SimpleBar>
+      <p>{current.context.messages.length}</p>
+      <pre>{JSON.stringify(current.context.messages, null, 2)}</pre>
+    </div>
   );
 }
 
 function ListItem({ message, send }) {
+  const toCamelCase = (str) =>
+    str
+      .split(/\s*[\s,]\s*/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   const styles = {
     flexContainer: {
       display: "flex",
@@ -67,8 +76,11 @@ function ListItem({ message, send }) {
       marginRight: "6px",
     },
   };
-  const handleDelete = async (objectId) => {
+  const handleDelete = (objectId) => {
     send({ type: "DEL_INBOX_ITEM", payload: objectId });
+  };
+  const markRead = (objectId) => {
+    send({ type: "MARK_MESSAGE_READ", payload: objectId });
   };
   function listItemOn(e) {
     e.target.style.color = "red";
@@ -76,16 +88,28 @@ function ListItem({ message, send }) {
   function listItemOff(e) {
     e.target.style.color = "black";
   }
+
   return (
-    <Segment attached style={styles.flexContainer}>
+    <Segment
+      onClick={markRead.bind(null, message.objectId)}
+      attached
+      className="listitem"
+      style={styles.flexContainer}
+    >
       <div style={styles.flexConCol}>
         <div style={styles.from}>
-          <strong>{message.from}</strong>
+          <strong>from: {toCamelCase(message.from)}</strong>
         </div>
         <div style={styles.time}>{message.timestamp}</div>
       </div>
       <div style={styles.divider}></div>
-      <div style={styles.body}>{message.body}</div>
+      <div style={styles.body}>
+        {message.title?.includes("READ") ? (
+          message.body
+        ) : (
+          <strong>{message.body}</strong>
+        )}
+      </div>
       <div style={styles.divider}></div>
       <div style={styles.buttons}>
         <Checkbox className="checkbox"></Checkbox>

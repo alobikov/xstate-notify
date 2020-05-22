@@ -62,7 +62,7 @@ export default function SenderSemui() {
       </Form>
       <Segment basic style={{ padding: "0px" }}>
         <Button
-          disabled={!current.context.msgInForm || current.context.clearBtnDis}
+          disabled={!current.context.msgInForm || !current.context.addressees}
           onClick={handleSend.bind(null, {
             body: current.context.msgInForm,
             to: current.context.addressees,

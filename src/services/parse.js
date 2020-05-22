@@ -104,14 +104,30 @@ export async function readOutbox(username) {
       body: msg.get("body"),
       title: msg.get("title"),
     }))
-    .filter((msg) => msg.title !== "DEL");
+    .filter((msg) => !msg.title?.includes("DEL"));
 }
 /// updates message title im Meessages collection
 export async function setMessageTitle(objectId, title) {
   const Messages = Parse.Object.extend("Messages");
   const message = new Parse.Query(Messages);
   message.get(objectId).then((object) => {
-    object.set("title", title);
+    object.set("title", title.trim());
+    object.save().then(
+      (response) => {
+        return null;
+      },
+      (error) => {
+        return "Error while updating " + error;
+      }
+    );
+  });
+}
+/// add new key to message title im Meessages collection
+export async function addMessageTitle(objectId, title) {
+  const Messages = Parse.Object.extend("Messages");
+  const message = new Parse.Query(Messages);
+  message.get(objectId).then((object) => {
+    object.set("title", `${object.get("title") || ""} ${title.trim()}`);
     object.save().then(
       (response) => {
         return null;
@@ -150,6 +166,7 @@ export async function createMessage(from, to, body) {
     objectId: result.id,
     body: result.get("body"),
     from: result.get("from"),
+    to: result.get("to"),
     timestamp: result.get("timestamp"),
   };
 }
