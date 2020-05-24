@@ -1,8 +1,6 @@
 import React from "react";
 import { Segment, Form, TextArea, Button, Icon } from "semantic-ui-react";
-import { Divider } from "semantic-ui-react";
 import { HomeMachineContext } from "../state";
-import { getAddressees } from "../../../services/parse";
 
 export default function SenderSemui() {
   const styles = {

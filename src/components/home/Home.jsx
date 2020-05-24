@@ -33,13 +33,6 @@ export default function Home({ user }) {
   console.log(current.value); // state
   console.log(current.context); // context of homeMachine
   console.log(current.event);
-  const handleReadMessages = () => {
-    console.log("handelReadMessages()");
-    send("READ_MESSAGES");
-  };
-  const addMessage = () => {
-    send("ADD_MESSAGE");
-  };
 
   return (
     <HomeMachineContext.Provider value={[current, send]}>

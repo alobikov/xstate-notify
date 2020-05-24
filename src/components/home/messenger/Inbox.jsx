@@ -3,6 +3,7 @@ import { HomeMachineContext } from "../state";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import { Segment, List, Icon, Checkbox } from "semantic-ui-react";
+import { Hidden } from "@material-ui/core";
 
 export default function Inbox() {
   console.log("*** Messenger rendered ***");
@@ -86,12 +87,16 @@ function ListItem({ message, send }) {
     e.target.style.color = "red";
   }
   function listItemOff(e) {
-    e.target.style.color = "black";
+    e.target.style.color = "grey";
   }
 
   return (
     <Segment
-      onClick={markRead.bind(null, message.objectId)}
+      onClick={
+        !message.title?.includes("READ")
+          ? markRead.bind(null, message.objectId)
+          : null
+      }
       attached
       className="listitem"
       style={styles.flexContainer}
