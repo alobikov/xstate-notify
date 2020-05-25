@@ -47,6 +47,17 @@ export function userSignUp({ username, email, password }, callback) {
 }
 
 export async function userSignUpAsync({ username, email, password }) {
+  const toCamelCase = (str) =>
+    str
+      .split(/\s*[\s,]\s*/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+  var currentUser = Parse.User.current();
+  if (currentUser) {
+    // do stuff with the user
+    Parse.User.logOut();
+  }
   const user = new Parse.User();
   user.set("name", "web_user");
   user.set("password", password);
@@ -59,15 +70,15 @@ export async function userSignUpAsync({ username, email, password }) {
     result = await user.logIn();
   } else {
     console.log("parse userSignUp() signUp tread");
-    user.set("username", username);
+    user.set("username", toCamelCase(username));
     user.set("email", email);
     console.log("before signUp seesion Token: ");
     result = await user.signUp();
+    result = result.toJSON();
+    await createSelfUser(toCamelCase(username), result.objectId);
   }
   console.log(result.get("sessionToken"));
   result = result.toJSON();
-  username = "test";
-  await createSelfUser(username, result.objectId);
   return result;
 }
 /// reads all inbox messages from Messsages for given user
@@ -216,12 +227,14 @@ async function createSelfUser(username, objectId) {
     user.save().then(
       (user) => {
         // Execute any logic that should take place after the object is saved.
-        alert("New object created with objectId: " + user.id);
+        console.log("New object created with objectId: " + user.id);
       },
       (error) => {
         // Execute any logic that should take place if the save fails.
         // error is a Parse.Error with an error code and message.
-        alert("Failed to create new object, with error code: " + error.message);
+        console.log(
+          "Failed to create new object, with error code: " + error.message
+        );
       }
     );
   } else if (result > 1)

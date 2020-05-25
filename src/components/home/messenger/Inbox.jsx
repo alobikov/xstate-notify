@@ -78,9 +78,11 @@ function ListItem({ message, send }) {
     },
   };
   const handleDelete = (objectId) => {
+    console.log("delete $$$$$$$$$$$$$$$$$$$$$$$$");
     send({ type: "DEL_INBOX_ITEM", payload: objectId });
   };
   const markRead = (objectId) => {
+    console.log("mark read 6666666666666666666666666");
     send({ type: "MARK_MESSAGE_READ", payload: objectId });
   };
   function listItemOn(e) {

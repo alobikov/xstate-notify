@@ -44,7 +44,7 @@ const markMessage = async (ctx, event) => {
   return ctx.messages.map((message) => {
     if (message.objectId !== event.payload) return message;
     console.log("changing title");
-    return { ...message, title: `${message.title} READ` };
+    return { ...message, title: (message.title || "" + "READ").trim() };
   });
 };
 
@@ -258,8 +258,15 @@ export const homeMachine = Machine(
             id: "messenger",
             initial: "inbox",
             states: {
-              inbox: {},
-              outbox: {},
+              inbox: {
+                on: {
+                  DEL_INBOX_ITEM: "deletingInboxItem",
+                  MARK_MESSAGE_READ: "markingMessage",
+                },
+              },
+              outbox: {
+                on: { DEL_OUTBOX_MESSAGE: "deletingOutboxMessage" },
+              },
               chat: {},
 
               deletingInboxItem: {
@@ -319,9 +326,9 @@ export const homeMachine = Machine(
               },
             },
             on: {
-              DEL_INBOX_ITEM: ".deletingInboxItem",
-              DEL_OUTBOX_MESSAGE: ".deletingOutboxMessage", //TODO
-              MARK_MESSAGE_READ: ".markingMessage",
+              SWITCH_TO_OUTBOX: ".outbox",
+              SWITCH_TO_INBOX: ".inbox",
+              SWITCH_TO_CHAT: ".chat",
             },
           },
         },

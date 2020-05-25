@@ -82,10 +82,10 @@ function ListItem({ message, send }) {
     e.target.style.color = "red";
   }
   function listItemOff(e) {
-    e.target.style.color = "black";
+    e.target.style.color = "grey";
   }
   return (
-    <Segment attached style={styles.flexContainer}>
+    <Segment className="listitem" attached style={styles.flexContainer}>
       <div style={styles.flexConCol}>
         <div style={styles.addressee}>
           <strong>to: {toCamelCase(message.to)}</strong>

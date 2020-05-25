@@ -48,12 +48,15 @@
   padding-bottom: 4px;
   color: grey;
 }
-/* .listitem:hover {
+.listitem:hover {
   background-color: azure;
-} */
+}
 /* .buttons {
   color: white;
 } */
 /* .buttons:hover {
   color: black;
+} */
+/* .btnsend:active {
+  background-color: blue;
 } */
