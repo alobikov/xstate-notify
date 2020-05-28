@@ -1,5 +1,6 @@
 import React from "react";
 import { Machine, assign, send } from "xstate";
+
 import {
   readMessages as readMessagesParse,
   getAddressees as getAddresseesParse,
@@ -44,7 +45,7 @@ const markMessage = async (ctx, event) => {
   return ctx.messages.map((message) => {
     if (message.objectId !== event.payload) return message;
     console.log("changing title");
-    return { ...message, title: (message.title || "" + "READ").trim() };
+    return { ...message, title: ((message.title || "") + " READ").trim() };
   });
 };
 
@@ -58,10 +59,12 @@ const dispatchMessage = async (ctx, event) => {
   // now update inbox if message sent to itself
   if (to === ctx.user.username) {
     ctx.messages = [message, ...ctx.messages];
+
   }
   // and finally update outbox
   ctx.outbox = [message, ...ctx.outbox];
 };
+
 export const homeMachine = Machine(
   {
     // machine is instantiated .withContext({user}), so all other context demolished

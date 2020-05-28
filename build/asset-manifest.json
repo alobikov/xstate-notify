@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "/static/css/main.21c2f7b4.chunk.css",
+    "main.js": "/static/js/main.66e1ddf9.chunk.js",
+    "main.js.map": "/static/js/main.66e1ddf9.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.2cf47cb9.js",
+    "runtime-main.js.map": "/static/js/runtime-main.2cf47cb9.js.map",
+    "static/css/2.f42c598c.chunk.css": "/static/css/2.f42c598c.chunk.css",
+    "static/js/2.7612ae23.chunk.js": "/static/js/2.7612ae23.chunk.js",
+    "static/js/2.7612ae23.chunk.js.map": "/static/js/2.7612ae23.chunk.js.map",
+    "static/js/3.effdabca.chunk.js": "/static/js/3.effdabca.chunk.js",
+    "static/js/3.effdabca.chunk.js.map": "/static/js/3.effdabca.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.366a9354bdb4964f43cb7124f8da90c6.js": "/precache-manifest.366a9354bdb4964f43cb7124f8da90c6.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.f42c598c.chunk.css.map": "/static/css/2.f42c598c.chunk.css.map",
+    "static/css/main.21c2f7b4.chunk.css.map": "/static/css/main.21c2f7b4.chunk.css.map",
+    "static/js/2.7612ae23.chunk.js.LICENSE.txt": "/static/js/2.7612ae23.chunk.js.LICENSE.txt",
+    "static/js/3.effdabca.chunk.js.LICENSE.txt": "/static/js/3.effdabca.chunk.js.LICENSE.txt",
+    "static/media/semantic.min.css": "/static/media/outline-icons.ef60a4f6.woff",
+    "static/media/drip-echo.wav": "/static/media/drip-echo.ec5aa5ba.wav",
+    "static/media/logo-bohnenkamp.svg": "/static/media/logo-bohnenkamp.ae1aeca0.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2cf47cb9.js",
+    "static/css/2.f42c598c.chunk.css",
+    "static/js/2.7612ae23.chunk.js",
+    "static/css/main.21c2f7b4.chunk.css",
+    "static/js/main.66e1ddf9.chunk.js"
+  ]
+}

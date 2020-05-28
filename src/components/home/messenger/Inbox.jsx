@@ -4,6 +4,8 @@ import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import { Segment, List, Icon, Checkbox } from "semantic-ui-react";
 import { Hidden } from "@material-ui/core";
+import useSound from 'use-sound';
+import dripSfx from '../../assets/drip-echo.wav';
 
 export default function Inbox() {
   console.log("*** Messenger rendered ***");
@@ -29,15 +31,17 @@ export default function Inbox() {
               <ListItem message={message} key={message.objectId} send={send} />
             ))}
           </List>
+          {console.log('assssssssssssssssssssssssssssssss')}
         </div>
       </SimpleBar>
-      <p>{current.context.messages.length}</p>
-      <pre>{JSON.stringify(current.context.messages, null, 2)}</pre>
+      {/*<p>{current.context.messages.length}</p>*/}
+      {/*<pre>{JSON.stringify(current.context.messages, null, 2)}</pre>*/}
     </div>
   );
 }
 
 function ListItem({ message, send }) {
+  const [play] = useSound(dripSfx);
   const toCamelCase = (str) =>
     str
       .split(/\s*[\s,]\s*/)
